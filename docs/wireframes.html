@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecMgmt v1 — Mobile UX Wireframes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f8f9fa; font-family: system-ui, -apple-system, sans-serif; padding: 30px; color: #1e1e1e; }
+  h1 { font-size: 28px; margin-bottom: 4px; }
+  .subtitle { color: #868e96; font-size: 18px; margin-bottom: 30px; }
+  .gallery { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .device-wrap { text-align: center; }
+  .device-label { font-size: 14px; font-weight: 600; color: #495057; margin-bottom: 8px; }
+  .device { width: 360px; height: 700px; border: 3px solid #343a40; border-radius: 20px; background: #fff; overflow: hidden; position: relative; display: inline-flex; flex-direction: column; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+  .topbar { height: 44px; background: #f8f9fa; display: flex; align-items: center; padding: 0 12px; justify-content: space-between; flex-shrink: 0; }
+  .app-name { font-weight: 700; font-size: 18px; color: #1971c2; }
+  .layers-btn { width: 36px; height: 28px; border: 1px solid #1971c2; border-radius: 6px; background: #e7f5ff; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #1971c2; cursor: default; }
+  .map-area { flex: 1; background: #e8f4f8; position: relative; overflow: hidden; min-height: 350px; }
+  .map-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: #868e96; }
+  .map-label strong { font-size: 18px; }
+  .map-label span { font-size: 14px; color: #adb5bd; }
+  .country { position: absolute; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #1e1e1e; }
+  .pin { position: absolute; width: 12px; height: 12px; border-radius: 3px; }
+  .footer { height: 40px; background: #e9ecef; display: flex; align-items: center; padding: 0 12px; justify-content: space-between; flex-shrink: 0; font-size: 11px; color: #868e96; }
+
+  .popup { position: absolute; top: 390px; left: 40px; width: 280px; background: #fff; border: 2px solid #343a40; border-radius: 8px; padding: 10px 12px; text-align: left; font-size: 11px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .popup h3 { font-size: 14px; margin-bottom: 4px; }
+  .popup .level { color: #e03131; font-weight: 600; margin-bottom: 2px; }
+  .popup .risks { color: #495057; margin-bottom: 4px; }
+  .popup .action { color: #1971c2; font-weight: 500; }
+
+  .legend { position: absolute; bottom: 46px; left: 12px; font-size: 10px; color: #868e96; display: flex; gap: 8px; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 3px; }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; }
+
+  .sheet-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 260px; background: #fff; border-top: 2px solid #343a40; border-radius: 12px 12px 0 0; padding: 16px; }
+  .sheet-handle { width: 30px; height: 4px; background: #dee2e6; border-radius: 2px; margin: 0 auto 12px; }
+  .sheet-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  .layer-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .cb { width: 18px; height: 18px; border-radius: 4px; border: 2px solid; flex-shrink: 0; margin-top: 2px; }
+  .cb.checked { background: #1971c2; border-color: #1971c2; }
+  .cb.red { border-color: #e03131; }
+  .cb.orange { border-color: #f08c00; }
+  .cb.gray { border-color: #adb5bd; }
+  .layer-text { text-align: left; }
+  .layer-name { font-size: 13px; font-weight: 600; }
+  .layer-desc { font-size: 10px; color: #adb5bd; }
+
+  .detail-header { padding: 12px; background: #ffd8a8; }
+  .detail-header .back { font-size: 12px; color: #1971c2; cursor: default; }
+  .detail-header h2 { font-size: 20px; margin: 2px 0; }
+  .detail-header .adv-level { font-size: 12px; color: #e03131; font-weight: 600; }
+  .detail-header .tags { font-size: 10px; color: #495057; margin-top: 2px; }
+
+  .section-title { font-size: 13px; font-weight: 600; color: #495057; padding: 10px 12px 4px; }
+  .card { margin: 0 12px 6px; padding: 8px 10px; border: 1px solid #dee2e6; border-radius: 6px; background: #fff; text-align: left; }
+  .card h4 { font-size: 11px; margin-bottom: 2px; color: #1e1e1e; }
+  .card p { font-size: 10px; color: #868e96; }
+  .card .link { font-size: 10px; color: #1971c2; margin-top: 2px; }
+
+  .event-item { margin: 0 12px 4px; padding: 6px 10px; border: 1px solid #dee2e6; border-radius: 4px; display: flex; align-items: center; gap: 6px; font-size: 10px; }
+  .event-item.battle { background: #fff5f5; color: #e03131; }
+  .event-item.protest { background: #fff9db; color: #f08c00; }
+  .event-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .event-dot.red { background: #e03131; }
+  .event-dot.orange { background: #f08c00; }
+
+  .preload-btn { margin: 10px 12px; padding: 8px; background: #e7f5ff; border: 1px solid #1971c2; border-radius: 6px; text-align: center; font-size: 12px; color: #1971c2; font-weight: 600; cursor: default; }
+
+  .event-detail-hdr { padding: 12px; background: #fff5f5; }
+  .event-detail-hdr .back { font-size: 12px; color: #1971c2; cursor: default; }
+  .event-detail-hdr h3 { font-size: 15px; color: #e03131; margin-top: 2px; }
+  .detail-field { padding: 2px 12px; font-size: 12px; color: #495057; }
+  .detail-field .label { color: #868e96; }
+
+  .divider { border: none; border-top: 1px solid #dee2e6; margin: 24px 0; }
+  .arch-section { margin-top: 16px; }
+  .arch-section h2 { font-size: 18px; margin-bottom: 12px; }
+  .arch-grid { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .arch-box { padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; min-width: 120px; text-align: center; }
+  .arch-box.gov { background: #ffd8a8; }
+  .arch-box.conflict { background: #ffc9c9; }
+  .arch-box.disaster { background: #b2f2bb; }
+  .arch-box.more { background: #fff3bf; }
+  .arch-box.app { background: #a5d8ff; border: 2px solid #1971c2; }
+  .arrow { font-size: 18px; color: #868e96; }
+  .arch-footnote { font-size: 12px; color: #868e96; margin-top: 8px; }
+
+  @media (max-width: 768px) {
+    .gallery { flex-direction: column; align-items: center; }
+    .device { width: 320px; height: 620px; }
+    .popup { top: 330px; left: 20px; width: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>SecMgmt v1 — Mobile UX Wireframes</h1>
+<p class="subtitle">Travel Risk Intelligence Map — Solo traveler MVP</p>
+
+<div class="gallery">
+
+<!-- Screen 1: Main Map View -->
+<div class="device-wrap">
+  <div class="device-label">Screen 1 — Main Map View</div>
+  <div class="device">
+    <div class="topbar">
+      <span class="app-name">SecMgmt</span>
+      <span class="layers-btn">•••</span>
+    </div>
+    <div class="map-area">
+      <div class="map-label"><strong>OpenStreetMap</strong><br><span>(base layer)</span></div>
+
+      <!-- Country overlays -->
+      <div class="country" style="left:90px; top:120px; width:70px; height:35px; background:#b2f2bb; opacity:0.7; font-size:11px;">DE</div>
+      <div class="country" style="left:60px; top:160px; width:90px; height:40px; background:#ffd8a8; opacity:0.7;">France</div>
+      <div class="country" style="left:50px; top:210px; width:70px; height:30px; background:#fff3bf; opacity:0.7; font-size:11px;">Spain</div>
+      <div class="country" style="left:30px; top:240px; width:90px; height:40px; background:#ffc9c9; opacity:0.7;">Algeria</div>
+
+      <!-- Event pins -->
+      <div class="pin" style="left:150px; top:175px; background:#e03131;">◆</div>
+      <div class="pin" style="left:90px; top:220px; background:#e03131;"></div>
+      <div class="pin" style="left:200px; top:155px; background:#f08c00;"></div>
+
+      <!-- Popup -->
+      <div class="popup">
+        <h3>Country: Algeria</h3>
+        <div class="level">Advisory Level: 3 — High (State Dept)</div>
+        <div class="risks">Risks: terrorism, kidnapping, crime, civil unrest</div>
+        <div class="action">Tap to see full details from 4 sources →</div>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="swatch" style="background:#b2f2bb;"></span> L1</span>
+        <span class="legend-item"><span class="swatch" style="background:#fff3bf;"></span> L2</span>
+        <span class="legend-item"><span class="swatch" style="background:#ffd8a8;"></span> L3</span>
+        <span class="legend-item"><span class="swatch" style="background:#ffc9c9;"></span> L4</span>
+        <span style="color:#e03131; margin-left:4px;">● = conflict event</span>
+      </div>
+    </div>
+    <div class="footer">
+      <span>Last updated: 2 hours ago · Refresh</span>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 2: Layer Selector -->
+<div class="device-wrap">
+  <div class="device-label">Screen 2 — Layer Selector (bottom sheet)</div>
+  <div class="device">
+    <div class="topbar">
+      <span class="app-name">SecMgmt</span>
+      <span class="layers-btn" style="background:#1971c2; color:#fff;">•••</span>
+    </div>
+    <div class="map-area" style="opacity:0.5;">
+      <div class="map-label"><span>Map dimmed behind sheet</span></div>
+    </div>
+    <div class="sheet-overlay">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Map Layers</div>
+      <div class="layer-item">
+        <div class="cb checked"></div>
+        <div class="layer-text">
+          <div class="layer-name">Government Travel Advisories (6 sources)</div>
+          <div class="layer-desc">Country fill colors by risk level 1–4</div>
+        </div>
+      </div>
+      <div class="layer-item">
+        <div class="cb red"></div>
+        <div class="layer-text">
+          <div class="layer-name">Conflict &amp; Political Violence (ACLED)</div>
+          <div class="layer-desc">Red = battles, Purple = civilian violence</div>
+        </div>
+      </div>
+      <div class="layer-item">
+        <div class="cb orange"></div>
+        <div class="layer-text">
+          <div class="layer-name">Natural Disasters (GDACS)</div>
+          <div class="layer-desc">Green/Orange/Red alert level icons</div>
+        </div>
+      </div>
+      <div class="layer-item">
+        <div class="cb gray"></div>
+        <div class="layer-text">
+          <div class="layer-name" style="color:#adb5bd;">Humanitarian Incidents (INSO)</div>
+          <div class="layer-desc">Disabled — Coming in v2</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 3: Country Detail -->
+<div class="device-wrap">
+  <div class="device-label">Screen 3 — Country Advisory Detail</div>
+  <div class="device" style="overflow-y:auto;">
+    <div class="detail-header">
+      <div class="back">← Back</div>
+      <h2>Algeria</h2>
+      <div class="adv-level">Advisory: Level 3 — Reconsider Travel</div>
+      <div class="tags">Crime · Terrorism · Kidnapping · Civil Unrest</div>
+    </div>
+
+    <div class="section-title">Government Advisories</div>
+    <div class="card">
+      <h4>[US] State Department · Level 3</h4>
+      <p>Reconsider travel due to terrorism, kidnapping, crime...</p>
+      <div class="link">Tap to expand full advisory →</div>
+    </div>
+    <div class="card">
+      <h4>[UK] Foreign Office · High Threat</h4>
+      <p>The FCDO advises against all travel to...</p>
+      <div class="link">Tap to expand full advisory →</div>
+    </div>
+    <div class="card">
+      <h4>[Canada] GAC · Level 3 (Avoid non-essential)</h4>
+      <p>Avoid non-essential travel due to security situation...</p>
+      <div class="link">Tap to expand full advisory →</div>
+    </div>
+
+    <div class="section-title">Recent Events (ACLED, GDACS)</div>
+    <div class="event-item battle"><span class="event-dot red"></span> [Battle] Clashes in Tizi Ouzou — Jul 3, 2026</div>
+    <div class="event-item protest"><span class="event-dot orange"></span> [Protest] Demonstration in Algiers — Jul 2, 2026</div>
+
+    <div class="preload-btn">Download for offline</div>
+  </div>
+</div>
+
+<!-- Screen 4: Event Detail -->
+<div class="device-wrap">
+  <div class="device-label">Screen 4 — Event Detail</div>
+  <div class="device">
+    <div class="event-detail-hdr">
+      <div class="back">← Back</div>
+      <h3>Battle: Clashes in Tizi Ouzou</h3>
+    </div>
+    <div class="detail-field"><span class="label">Event Type:</span> Battle / Armed Clash</div>
+    <div class="detail-field"><span class="label">Date:</span> 3 July 2026</div>
+    <div class="detail-field"><span class="label">Location:</span> Tizi Ouzou, Kabylie, Algeria</div>
+    <div class="detail-field"><span class="label">Fatalities:</span> <strong style="color:#e03131;">3 reported</strong></div>
+    <div class="detail-field"><span class="label">Actors:</span> Security forces, Armed group (unidentified)</div>
+    <div class="section-title">Related Advisories</div>
+    <div class="card">
+      <h4>Algeria — Level 3 (US State Dept)  |  View</h4>
+    </div>
+    <div class="detail-field" style="margin-top:16px; color:#868e96; font-size:10px;">
+      Source: ACLED (Armed Conflict Location &amp; Event Data)<br>
+      Reference: ACLED Event ID #1234567
+    </div>
+  </div>
+</div>
+
+</div>
+
+<hr class="divider">
+
+<!-- Architecture Diagram -->
+<div class="arch-section">
+  <h2>Architecture — Data Flow (v1, no server)</h2>
+  <div class="arch-grid">
+    <div class="arch-box gov">US State Dept API</div>
+    <span class="arrow">→</span>
+    <div class="arch-box gov" style="margin-left:0;">UK FCDO API</div>
+    <span class="arrow">→</span>
+    <div class="arch-box gov">Canada GAC API</div>
+    <span class="arrow">→</span>
+    <div class="arch-box more">France · Australia · Germany</div>
+    <span class="arrow">→</span>
+    <div class="arch-box conflict">ACLED API</div>
+    <span class="arrow">→</span>
+    <div class="arch-box disaster">GDACS RSS</div>
+    <span class="arrow">→</span>
+    <div style="width:100%; height:1px;"></div>
+    <div style="margin-left:40px;"></div>
+    <div class="arch-box app" style="min-width:200px;">
+      <strong>SecMgmt Mobile App</strong><br>
+      <span style="font-weight:400; font-size:11px;">Fetches → Parses → Caches<br>Local SQLite + tile cache<br>No server needed</span>
+    </div>
+    <span class="arrow">→</span>
+    <div style="font-size:28px; font-weight:700; color:#1e1e1e;">User</div>
+  </div>
+  <p class="arch-footnote">Note: All API calls made directly from the device. No server, no telemetry, no accounts in v1.</p>
+</div>
+
+<p style="margin-top:24px; font-size:12px; color:#adb5bd;"><em>SecMgmt App · v1 Wireframes · Generated 2026-07-04 · Open this HTML in any browser</em></p>
+
+</body>
+</html>
