@@ -103,18 +103,18 @@ class UsStateDeptAdvisorySource implements AdvisorySource {
 
   String _extractText(Map<String, dynamic> data) {
     final pieces = <String>[
-      data["title"]?.toString(),
-      data["summary"]?.toString(),
-      data["description"]?.toString(),
-      data["body"]?.toString(),
-      data["content"]?.toString(),
+      data["title"]?.toString() ?? "",
+      data["summary"]?.toString() ?? "",
+      data["description"]?.toString() ?? "",
+      data["body"]?.toString() ?? "",
+      data["content"]?.toString() ?? "",
     ];
     final details = data["details"];
     if (details is Map<String, dynamic>) {
       pieces.addAll([
-        details["body"]?.toString(),
-        details["summary"]?.toString(),
-        details["description"]?.toString(),
+        details["body"]?.toString() ?? "",
+        details["summary"]?.toString() ?? "",
+        details["description"]?.toString() ?? "",
       ]);
     }
     return stripTags(pieces.whereType<String>().where((value) => value.trim().isNotEmpty).join(" "));
