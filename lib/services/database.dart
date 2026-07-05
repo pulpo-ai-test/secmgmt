@@ -9,18 +9,47 @@ class AppDatabase {
     if (_db != null) return _db!;
     final dir = await getApplicationDocumentsDirectory();
     final path = join(dir.path, "secmgmt.db");
-    _db = await openDatabase(path, version: 1, onCreate: (db, version) async {
-      await db.execute("""
-        CREATE TABLE IF NOT EXISTS countries (
-          country_code TEXT PRIMARY KEY,
-          name TEXT NOT NULL,
-          region TEXT NOT NULL,
-          lat REAL NOT NULL,
-          lng REAL NOT NULL
-        )
-      """);
-    });
+    _db = await openDatabase(
+      path,
+      version: 2,
+      onCreate: (db, version) async {
+        await _createCountriesTable(db);
+        await _createAdvisoriesTable(db);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await _createAdvisoriesTable(db);
+        }
+      },
+    );
     return _db!;
+  }
+
+  Future<void> _createCountriesTable(Database db) async {
+    await db.execute("""
+      CREATE TABLE IF NOT EXISTS countries (
+        country_code TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        region TEXT NOT NULL,
+        lat REAL NOT NULL,
+        lng REAL NOT NULL
+      )
+    """);
+  }
+
+  Future<void> _createAdvisoriesTable(Database db) async {
+    await db.execute("""
+      CREATE TABLE IF NOT EXISTS advisories (
+        country_code TEXT NOT NULL,
+        source TEXT NOT NULL,
+        advisory_level INTEGER NOT NULL,
+        risk_factors TEXT NOT NULL,
+        full_text TEXT NOT NULL,
+        last_updated TEXT NOT NULL,
+        source_url TEXT NOT NULL,
+        PRIMARY KEY (country_code, source)
+      )
+    """);
   }
 
   Future<void> seedCountries(List<Map<String, dynamic>> countries) async {
