@@ -1,16 +1,19 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "services/database.dart";
 import "services/country_service.dart";
-import "package:secmgmt/services/database.dart";
 import "screens/map_screen.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Pre-seed database before app starts
-  final db = AppDatabase();
-  final service = CountryService(db);
-  await service.initializeAndSeed();
+  try {
+    final db = AppDatabase();
+    final service = CountryService(db);
+    await service.initializeAndSeed();
+  } catch (e) {
+    debugPrint("Database init skipped: $e");
+  }
 
   runApp(const ProviderScope(child: MyApp()));
 }

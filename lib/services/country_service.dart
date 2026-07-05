@@ -1,15 +1,6 @@
 import "dart:convert";
 import "package:flutter/services.dart" show rootBundle;
-import "package:flutter_riverpod/flutter_riverpod.dart";
 import "database.dart";
-
-final databaseProvider = Provider<AppDatabase>((ref) {
-  return AppDatabase();
-});
-
-final countryServiceProvider = Provider<CountryService>((ref) {
-  return CountryService(ref.read(databaseProvider));
-});
 
 class CountryService {
   final AppDatabase _database;
@@ -17,9 +8,7 @@ class CountryService {
 
   Future<void> initializeAndSeed() async {
     final count = await _database.countryCount();
-    if (count == 0) {
-      await _seedDatabase();
-    }
+    if (count == 0) await _seedDatabase();
   }
 
   Future<void> _seedDatabase() async {

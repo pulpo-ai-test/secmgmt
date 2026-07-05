@@ -1,82 +1,61 @@
-import "package:sqflite/sqflite.dart";
-import "package:path/path.dart";
-import "package:path_provider/path_provider.dart";
+import 'package:sembast/sembast.dart';
+import 'db_factory_web.dart'
+    if (dart.library.io) 'db_factory_io.dart';
 
 class AppDatabase {
   static Database? _db;
 
   Future<Database> get database async {
     if (_db != null) return _db!;
-    final dir = await getApplicationDocumentsDirectory();
-    final path = join(dir.path, "secmgmt.db");
-    _db = await openDatabase(
-      path,
-      version: 2,
-      onCreate: (db, version) async {
-        await _createCountriesTable(db);
-        await _createAdvisoriesTable(db);
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
-          await _createAdvisoriesTable(db);
-        }
-      },
-    );
+    _db = await getDatabaseFactory().openDatabase('secmgmt');
     return _db!;
   }
 
-  Future<void> _createCountriesTable(Database db) async {
-    await db.execute("""
-      CREATE TABLE IF NOT EXISTS countries (
-        country_code TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        region TEXT NOT NULL,
-        lat REAL NOT NULL,
-        lng REAL NOT NULL
-      )
-    """);
-  }
-
-  Future<void> _createAdvisoriesTable(Database db) async {
-    await db.execute("""
-      CREATE TABLE IF NOT EXISTS advisories (
-        country_code TEXT NOT NULL,
-        source TEXT NOT NULL,
-        advisory_level INTEGER NOT NULL,
-        risk_factors TEXT NOT NULL,
-        full_text TEXT NOT NULL,
-        last_updated TEXT NOT NULL,
-        source_url TEXT NOT NULL,
-        PRIMARY KEY (country_code, source)
-      )
-    """);
-  }
+  StoreRef<String, Map<String, dynamic>> get _countryStore =>
+      stringMapStoreFactory.store('countries');
 
   Future<void> seedCountries(List<Map<String, dynamic>> countries) async {
     final db = await database;
-    final batch = db.batch();
+    await _countryStore.delete(db);
     for (final c in countries) {
-      batch.insert("countries", c,
-          conflictAlgorithm: ConflictAlgorithm.replace);
+      await _countryStore.record(c['country_code'] as String).put(db, c);
     }
-    await batch.commit(noResult: true);
   }
 
   Future<List<Map<String, dynamic>>> getAllCountries() async {
     final db = await database;
-    return db.query("countries", orderBy: "name ASC");
+    final records = await _countryStore.find(db);
+    return records.map((r) => r.value).toList();
   }
 
   Future<Map<String, dynamic>?> getCountryByCode(String code) async {
     final db = await database;
-    final rows = await db.query("countries",
-        where: "country_code = ?", whereArgs: [code], limit: 1);
-    return rows.isNotEmpty ? rows.first : null;
+    return await _countryStore.record(code).get(db);
   }
 
   Future<int> countryCount() async {
+    return (await getAllCountries()).length;
+  }
+
+  StoreRef<String, Map<String, dynamic>> get _advisoryStore =>
+      stringMapStoreFactory.store('advisories');
+
+  Future<void> upsertAdvisory(Map<String, dynamic> advisory) async {
     final db = await database;
-    final result = await db.rawQuery("SELECT COUNT(*) as cnt FROM countries");
-    return Sqflite.firstIntValue(result) ?? 0;
+    final key = '${advisory['country_code']}_${advisory['source']}';
+    await _advisoryStore.record(key).put(db, advisory);
+  }
+
+  Future<List<Map<String, dynamic>>> getAdvisoriesForCountry(String countryCode) async {
+    final db = await database;
+    final records = await _advisoryStore.find(db,
+        finder: Finder(filter: Filter.equals('country_code', countryCode)));
+    return records.map((r) => r.value).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getAllAdvisories() async {
+    final db = await database;
+    final records = await _advisoryStore.find(db);
+    return records.map((r) => r.value).toList();
   }
 }
